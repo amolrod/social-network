@@ -1,0 +1,63 @@
+<aside class="sidebar">
+  <nav class="sidebar-nav">
+    <!-- Navegación principal -->
+    <ul class="nav-list">
+      @for (item of navItems; track item.route) {
+        <li class="nav-item">
+          <a 
+            [routerLink]="item.route" 
+            routerLinkActive="active"
+            class="nav-link"
+            [title]="item.label"
+          >
+            <div class="nav-icon">
+              <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                width="24" 
+                height="24" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="currentColor" 
+                stroke-width="2" 
+                stroke-linecap="round" 
+                stroke-linejoin="round"
+                [innerHTML]="getIconSvg(item.icon)"
+              ></svg>
+              @if (item.badge) {
+                <span class="badge">{{ item.badge }}</span>
+              }
+            </div>
+            <span class="nav-label">{{ item.label }}</span>
+          </a>
+        </li>
+      }
+    </ul>
+
+    <!-- Separador -->
+    <div class="sidebar-divider"></div>
+
+    <!-- Botón de crear post -->
+    <button class="create-post-btn" type="button">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 5v14"></path>
+        <path d="M5 12h14"></path>
+      </svg>
+      <span>Crear Post</span>
+    </button>
+
+    <!-- Usuario actual -->
+    @if (currentUser()) {
+      <div class="sidebar-user">
+        <div class="user-avatar">
+          <span class="avatar-text">
+            {{ currentUser()!.fullName.substring(0, 2).toUpperCase() }}
+          </span>
+        </div>
+        <div class="user-info">
+          <p class="user-name">{{ currentUser()!.fullName }}</p>
+          <p class="user-username">@{{ currentUser()!.username }}</p>
+        </div>
+      </div>
+    }
+  </nav>
+</aside>

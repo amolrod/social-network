@@ -1,0 +1,31 @@
+/* Contenido principal */
+.main-content {
+  min-height: 100vh;
+  background: #f9fafb;
+  padding-top: 60px; // Altura del navbar
+  padding-bottom: 64px; // Altura del bottom-nav en móvil
+
+  @media (min-width: 1024px) {
+    padding-left: 280px; // Ancho del sidebar en desktop
+    padding-bottom: 0; // Sin bottom-nav en desktop
+  }
+}
+
+.content-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem;
+
+  @media (min-width: 640px) {
+    padding: 2rem 1.5rem;
+  }
+
+  @media (min-width: 1024px) {
+    padding: 2rem;
+  }
+}
+
+/* Animaciones suaves para transiciones */
+* {
+  transition: padding 0.3s ease, margin 0.3s ease;
+}

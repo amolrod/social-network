@@ -1,0 +1,111 @@
+<div class="home-container">
+  <!-- Header de bienvenida -->
+  <div class="welcome-header">
+    <h1>¡Hola, {{ currentUser()?.fullName || 'Usuario' }}! 👋</h1>
+    <p class="subtitle">Bienvenido a tu feed de SocialNet</p>
+  </div>
+
+  <!-- Grid layout: Feed + Sidebar -->
+  <div class="home-grid">
+    <!-- Columna principal: Feed -->
+    <div class="feed-column">
+      <!-- Card de estado/crear post -->
+      <div class="create-post-card">
+        <div class="user-avatar">
+          <span>{{ userInitials() }}</span>
+        </div>
+        <button class="create-post-input" type="button">
+          ¿Qué estás pensando@if (userFirstName()) {<span>, {{ userFirstName() }}</span>}?
+        </button>
+      </div>
+
+      <!-- Posts placeholder -->
+      <div class="posts-container">
+        <div class="card info-card">
+          <h2>🎉 ¡Todo listo!</h2>
+          <p>Tu cuenta está activa y el sistema de navegación está funcionando.</p>
+          
+          <div class="user-info-grid">
+            <div class="info-item">
+              <span class="label">Email:</span>
+              <span class="value">{{ currentUser()?.email }}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">Username:</span>
+              <span class="value">@{{ currentUser()?.username }}</span>
+            </div>
+          </div>
+
+          <div class="progress-section">
+            <h3>Progreso del proyecto:</h3>
+            <ul class="feature-list">
+              <li class="completed">✅ Backend con NestJS + PostgreSQL</li>
+              <li class="completed">✅ Autenticación JWT funcionando</li>
+              <li class="completed">✅ Guards de rutas activos</li>
+              <li class="completed">✅ State management con Signals</li>
+              <li class="completed">✅ Componentes de autenticación</li>
+              <li class="completed">✅ Layout responsive completo</li>
+              <li class="completed">✅ Navbar, Sidebar y Bottom Nav</li>
+              <li class="pending">⏳ Sistema de Posts</li>
+              <li class="pending">⏳ Comentarios y Likes</li>
+              <li class="pending">⏳ Sistema de Follows</li>
+              <li class="pending">⏳ Mensajería en tiempo real</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Columna lateral: Widgets (solo desktop) -->
+    <aside class="widgets-column">
+      <div class="card widget">
+        <h3>Sugerencias para ti</h3>
+        <p class="widget-subtitle">Usuarios que quizás conozcas</p>
+        <div class="suggestions-list">
+          <div class="suggestion-item">
+            <div class="suggestion-avatar">JS</div>
+            <div class="suggestion-info">
+              <p class="suggestion-name">John Smith</p>
+              <p class="suggestion-username">@johnsmith</p>
+            </div>
+            <button class="btn-follow">Seguir</button>
+          </div>
+          <div class="suggestion-item">
+            <div class="suggestion-avatar">MD</div>
+            <div class="suggestion-info">
+              <p class="suggestion-name">María Díaz</p>
+              <p class="suggestion-username">@mariadiaz</p>
+            </div>
+            <button class="btn-follow">Seguir</button>
+          </div>
+          <div class="suggestion-item">
+            <div class="suggestion-avatar">AL</div>
+            <div class="suggestion-info">
+              <p class="suggestion-name">Alex López</p>
+              <p class="suggestion-username">@alexlopez</p>
+            </div>
+            <button class="btn-follow">Seguir</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card widget">
+        <h3>Tendencias</h3>
+        <div class="trending-list">
+          <div class="trending-item">
+            <p class="trending-tag">#Angular18</p>
+            <p class="trending-count">2.5K posts</p>
+          </div>
+          <div class="trending-item">
+            <p class="trending-tag">#WebDevelopment</p>
+            <p class="trending-count">1.8K posts</p>
+          </div>
+          <div class="trending-item">
+            <p class="trending-tag">#TypeScript</p>
+            <p class="trending-count">1.2K posts</p>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>

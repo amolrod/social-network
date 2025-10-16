@@ -1,0 +1,31 @@
+<nav class="bottom-nav">
+  <div class="bottom-nav-container">
+    @for (item of navItems; track item.route) {
+      <a 
+        [routerLink]="item.route" 
+        routerLinkActive="active"
+        class="bottom-nav-item"
+        [title]="item.label"
+      >
+        <div class="nav-icon-wrapper">
+          <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            width="24" 
+            height="24" 
+            viewBox="0 0 24 24" 
+            fill="none" 
+            stroke="currentColor" 
+            stroke-width="2" 
+            stroke-linecap="round" 
+            stroke-linejoin="round"
+            [innerHTML]="getIconSvg(item.icon)"
+          ></svg>
+          @if (item.badge) {
+            <span class="badge">{{ item.badge }}</span>
+          }
+        </div>
+        <span class="nav-label">{{ item.label }}</span>
+      </a>
+    }
+  </div>
+</nav>

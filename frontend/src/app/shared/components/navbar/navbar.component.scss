@@ -1,0 +1,377 @@
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  z-index: 1000;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.navbar-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1rem;
+  gap: 1rem;
+}
+
+/* Logo y marca */
+.navbar-brand {
+  flex-shrink: 0;
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #1d4ed8;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 1.25rem;
+    transition: color 0.2s;
+
+    &:hover {
+      color: #1e40af;
+    }
+
+    svg {
+      width: 32px;
+      height: 32px;
+    }
+  }
+
+  .logo-text {
+    display: none;
+
+    @media (min-width: 640px) {
+      display: inline;
+    }
+  }
+}
+
+/* Buscador */
+.search-container {
+  flex: 1;
+  max-width: 500px;
+  display: none;
+
+  @media (min-width: 768px) {
+    display: block;
+  }
+}
+
+.search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.search-icon {
+  position: absolute;
+  left: 12px;
+  color: #9ca3af;
+  pointer-events: none;
+}
+
+.search-input {
+  width: 100%;
+  height: 40px;
+  padding: 0 12px 0 40px;
+  border: 1px solid #e5e7eb;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  background: #f9fafb;
+  transition: all 0.2s;
+
+  &:focus {
+    outline: none;
+    border-color: #1d4ed8;
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.1);
+  }
+
+  &::placeholder {
+    color: #9ca3af;
+  }
+}
+
+/* Acciones de la navbar */
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+
+  @media (min-width: 640px) {
+    gap: 1rem;
+  }
+}
+
+.action-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: #4b5563;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+
+  svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  &:hover {
+    background: #f3f4f6;
+    color: #1d4ed8;
+  }
+
+  &.active {
+    color: #1d4ed8;
+    background: #dbeafe;
+  }
+
+  .badge {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #ef4444;
+    color: white;
+    font-size: 0.625rem;
+    font-weight: 600;
+    border-radius: 9px;
+    border: 2px solid white;
+  }
+}
+
+.search-btn-mobile {
+  @media (min-width: 768px) {
+    display: none;
+  }
+}
+
+/* Avatar y menú de usuario */
+.user-menu-container {
+  position: relative;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid #e5e7eb;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+
+  &:hover {
+    border-color: #1d4ed8;
+    transform: scale(1.05);
+  }
+}
+
+.avatar-initials {
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+/* Dropdown del menú de usuario */
+.user-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 280px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  animation: slideDown 0.2s ease-out;
+  z-index: 1001;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.user-dropdown-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.dropdown-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  .avatar-initials {
+    font-size: 1rem;
+  }
+}
+
+.user-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.user-name {
+  font-weight: 600;
+  font-size: 0.9375rem;
+  margin: 0 0 4px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-username {
+  font-size: 0.8125rem;
+  margin: 0;
+  opacity: 0.9;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-dropdown-divider {
+  height: 1px;
+  background: #e5e7eb;
+  margin: 8px 0;
+}
+
+.dropdown-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border: none;
+  background: transparent;
+  color: #374151;
+  font-size: 0.9375rem;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.2s;
+
+  svg {
+    width: 20px;
+    height: 20px;
+    color: #6b7280;
+  }
+
+  &:hover {
+    background: #f3f4f6;
+  }
+
+  &.logout-item {
+    color: #dc2626;
+
+    svg {
+      color: #dc2626;
+    }
+
+    &:hover {
+      background: #fee2e2;
+    }
+  }
+}
+
+/* Búsqueda móvil */
+.mobile-search {
+  position: absolute;
+  top: 60px;
+  left: 0;
+  right: 0;
+  padding: 12px 16px;
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  animation: slideDown 0.2s ease-out;
+
+  .search-box {
+    position: relative;
+  }
+
+  .close-search {
+    position: absolute;
+    right: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: #6b7280;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &:hover {
+      background: #f3f4f6;
+      color: #1d4ed8;
+    }
+  }
+
+  .search-input {
+    padding-right: 44px;
+  }
+}
+
+/* Overlay */
+.menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.1);
+  z-index: 999;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
