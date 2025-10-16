@@ -14,6 +14,7 @@ import jwtConfig from './config/jwt.config';
 // Módulos de features
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
+import { PostsModule } from './modules/posts/posts.module';
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
 
 /**
@@ -62,6 +63,7 @@ import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
     // Módulos de features
     AuthModule,
     UsersModule,
+    PostsModule,
   ],
   controllers: [AppController],
   providers: [

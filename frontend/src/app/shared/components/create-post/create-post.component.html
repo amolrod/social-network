@@ -1,0 +1,41 @@
+<div class="create-post">
+  <div class="user-avatar">
+    <div class="avatar-circle">{{ userInitials }}</div>
+  </div>
+  
+  <div class="post-content">
+    <textarea
+      class="post-input"
+      [(ngModel)]="contentValue"
+      placeholder="¿Qué estás pensando?"
+      [disabled]="isSubmitting()"
+      rows="3"
+    ></textarea>
+
+    @if (error()) {
+      <div class="alert alert-error">
+        {{ error() }}
+      </div>
+    }
+
+    <div class="post-actions">
+      <div class="char-counter" [class.warning]="getRemainingChars() < 100" [class.danger]="getRemainingChars() < 0">
+        {{ getRemainingChars() }} caracteres restantes
+      </div>
+
+      <button
+        type="button"
+        class="btn btn-primary"
+        (click)="onSubmit()"
+        [disabled]="isButtonDisabled()"
+      >
+        @if (isSubmitting()) {
+          <span class="spinner"></span>
+          Publicando...
+        } @else {
+          Publicar
+        }
+      </button>
+    </div>
+  </div>
+</div>

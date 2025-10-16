@@ -9,50 +9,57 @@
   <div class="home-grid">
     <!-- Columna principal: Feed -->
     <div class="feed-column">
-      <!-- Card de estado/crear post -->
-      <div class="create-post-card">
-        <div class="user-avatar">
-          <span>{{ userInitials() }}</span>
-        </div>
-        <button class="create-post-input" type="button">
-          ¿Qué estás pensando@if (userFirstName()) {<span>, {{ userFirstName() }}</span>}?
-        </button>
-      </div>
+      <!-- Componente para crear posts -->
+      <app-create-post (postCreated)="onPostCreated($event)"></app-create-post>
 
-      <!-- Posts placeholder -->
+      <!-- Estado de carga -->
+      @if (isLoading() && posts().length === 0) {
+        <div class="loading-container">
+          <div class="spinner"></div>
+          <p>Cargando posts...</p>
+        </div>
+      }
+
+      <!-- Error -->
+      @if (error()) {
+        <div class="card error-card">
+          <h3>Error</h3>
+          <p>{{ error() }}</p>
+          <button class="btn btn-primary" (click)="loadPosts(1)">Reintentar</button>
+        </div>
+      }
+
+      <!-- Lista de posts -->
       <div class="posts-container">
-        <div class="card info-card">
-          <h2>🎉 ¡Todo listo!</h2>
-          <p>Tu cuenta está activa y el sistema de navegación está funcionando.</p>
-          
-          <div class="user-info-grid">
-            <div class="info-item">
-              <span class="label">Email:</span>
-              <span class="value">{{ currentUser()?.email }}</span>
-            </div>
-            <div class="info-item">
-              <span class="label">Username:</span>
-              <span class="value">@{{ currentUser()?.username }}</span>
-            </div>
+        @if (posts().length === 0 && !isLoading() && !error()) {
+          <div class="card empty-state">
+            <h3>📝 No hay posts todavía</h3>
+            <p>Sé el primero en publicar algo</p>
           </div>
+        }
 
-          <div class="progress-section">
-            <h3>Progreso del proyecto:</h3>
-            <ul class="feature-list">
-              <li class="completed">✅ Backend con NestJS + PostgreSQL</li>
-              <li class="completed">✅ Autenticación JWT funcionando</li>
-              <li class="completed">✅ Guards de rutas activos</li>
-              <li class="completed">✅ State management con Signals</li>
-              <li class="completed">✅ Componentes de autenticación</li>
-              <li class="completed">✅ Layout responsive completo</li>
-              <li class="completed">✅ Navbar, Sidebar y Bottom Nav</li>
-              <li class="pending">⏳ Sistema de Posts</li>
-              <li class="pending">⏳ Comentarios y Likes</li>
-              <li class="pending">⏳ Sistema de Follows</li>
-              <li class="pending">⏳ Mensajería en tiempo real</li>
-            </ul>
+        @for (post of posts(); track post.id) {
+          <app-post-card
+            [post]="post"
+            (likePost)="onLikePost($event)"
+            (deletePost)="onDeletePost($event)"
+          ></app-post-card>
+        }
+
+        @if (hasMore() && !isLoading()) {
+          <div class="load-more-container">
+            <button class="btn btn-secondary" (click)="loadMore()">
+              Cargar más posts
+            </button>
           </div>
-        </div>
+        }
+
+        @if (isLoading() && posts().length > 0) {
+          <div class="loading-more">
+            <div class="spinner"></div>
+            <p>Cargando más posts...</p>
+          </div>
+        }
       </div>
     </div>
 
