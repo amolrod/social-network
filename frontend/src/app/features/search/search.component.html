@@ -1,0 +1,127 @@
+<div class="search-container">
+  <div class="search-header">
+    <div class="search-input-wrapper">
+      <input 
+        type="text" 
+        class="search-input"
+        placeholder="Buscar por nombre o username..."
+        [value]="searchQuery()"
+        (input)="onSearchInput($event)">
+      <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+      </svg>
+    </div>
+  </div>
+
+  @if (isSearching()) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Buscando...</p>
+    </div>
+  }
+
+  @if (noResults() && !isSearching()) {
+    <div class="empty-state">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <h3>No se encontraron usuarios</h3>
+      <p>Intenta con otro término de búsqueda</p>
+    </div>
+  }
+
+  @if (searchResults().length > 0) {
+    <div class="users-section">
+      <h2>Resultados ({{ searchResults().length }})</h2>
+      <div class="users-grid">
+        @for (user of searchResults(); track user.id) {
+          <div class="user-card" (click)="goToProfile(user.username)">
+            <div class="user-avatar">
+              @if (user.avatarUrl) {
+                <img [src]="user.avatarUrl" [alt]="user.fullName || user.username">
+              } @else {
+                <div class="avatar-placeholder">
+                  {{ (user.fullName || user.username).charAt(0).toUpperCase() }}
+                </div>
+              }
+            </div>
+            <div class="user-info">
+              <div class="user-name-row">
+                <span class="full-name">{{ user.fullName }}</span>
+                @if (user.isVerified) {
+                  <svg class="verified-badge" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                  </svg>
+                }
+              </div>
+              <span class="username">@{{ user.username }}</span>
+              @if (user.bio) {
+                <p class="bio">{{ user.bio }}</p>
+              }
+              <div class="user-stats">
+                <span><strong>{{ user.followersCount || 0 }}</strong> seguidores</span>
+                <span><strong>{{ user.followingCount || 0 }}</strong> siguiendo</span>
+              </div>
+            </div>
+            @if (!isCurrentUser(user.id)) {
+              <div class="follow-action" (click)="$event.stopPropagation()">
+                <app-follow-button
+                  [userId]="user.id"
+                  [isFollowing]="isFollowing(user.id)"
+                  [size]="'small'"
+                  (followChange)="onFollowChange(user.id, $event)">
+                </app-follow-button>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  @if (suggestedUsers().length > 0 && searchQuery().length === 0) {
+    <div class="users-section">
+      <h2>Usuarios Sugeridos</h2>
+      <div class="users-grid">
+        @for (user of suggestedUsers(); track user.id) {
+          <div class="user-card" (click)="goToProfile(user.username)">
+            <div class="user-avatar">
+              @if (user.avatarUrl) {
+                <img [src]="user.avatarUrl" [alt]="user.fullName || user.username">
+              } @else {
+                <div class="avatar-placeholder">
+                  {{ (user.fullName || user.username).charAt(0).toUpperCase() }}
+                </div>
+              }
+            </div>
+            <div class="user-info">
+              <div class="user-name-row">
+                <span class="full-name">{{ user.fullName }}</span>
+                @if (user.isVerified) {
+                  <svg class="verified-badge" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                  </svg>
+                }
+              </div>
+              <span class="username">@{{ user.username }}</span>
+              <div class="user-stats">
+                <span><strong>{{ user.followersCount || 0 }}</strong> seguidores</span>
+                <span><strong>{{ user.followingCount || 0 }}</strong> siguiendo</span>
+              </div>
+            </div>
+            @if (!isCurrentUser(user.id)) {
+              <div class="follow-action" (click)="$event.stopPropagation()">
+                <app-follow-button
+                  [userId]="user.id"
+                  [isFollowing]="isFollowing(user.id)"
+                  [size]="'small'"
+                  (followChange)="onFollowChange(user.id, $event)">
+                </app-follow-button>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

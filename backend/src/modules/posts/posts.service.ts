@@ -30,10 +30,11 @@ export class PostsService {
       throw new NotFoundException('Usuario no encontrado');
     }
 
-    // Crear el post
+    // Crear el post - Asignamos tanto user como userId para asegurar que TypeORM lo guarde correctamente
     const post = this.postRepository.create({
       ...createPostDto,
-      userId: userId,
+      user: user,  // Asignamos el objeto user completo
+      userId: userId,  // También asignamos el userId explícitamente
     });
 
     const savedPost = await this.postRepository.save(post);

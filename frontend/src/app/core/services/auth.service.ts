@@ -1,6 +1,6 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable, tap, catchError, throwError } from 'rxjs';
+import { Observable, tap, catchError, throwError, map } from 'rxjs';
 import { ApiService } from './api.service';
 import {
   User,
@@ -46,7 +46,8 @@ export class AuthService {
   register(data: RegisterData): Observable<AuthResponse> {
     this.isLoadingSignal.set(true);
     
-    return this.apiService.post<AuthResponse>('/auth/register', data).pipe(
+    return this.apiService.post<any>('/auth/register', data).pipe(
+      map(response => response.data || response),
       tap(response => this.handleAuthSuccess(response)),
       catchError(error => {
         this.isLoadingSignal.set(false);
@@ -61,7 +62,8 @@ export class AuthService {
   login(credentials: LoginCredentials): Observable<AuthResponse> {
     this.isLoadingSignal.set(true);
     
-    return this.apiService.post<AuthResponse>('/auth/login', credentials).pipe(
+    return this.apiService.post<any>('/auth/login', credentials).pipe(
+      map(response => response.data || response),
       tap(response => this.handleAuthSuccess(response)),
       catchError(error => {
         this.isLoadingSignal.set(false);
@@ -138,16 +140,34 @@ export class AuthService {
    * Maneja el éxito de autenticación
    */
   private handleAuthSuccess(response: AuthResponse): void {
+    console.log('🔐 handleAuthSuccess called with:', {
+      hasAccessToken: !!response.access_token,
+      hasRefreshToken: !!response.refresh_token,
+      hasUser: !!response.user,
+      response: response
+    });
+    
     this.saveTokens(response.access_token, response.refresh_token);
     this.currentUserSignal.set(response.user);
     this.saveUser(response.user);
     this.isLoadingSignal.set(false);
+    
+    console.log('✅ Tokens guardados. Verificando:', {
+      accessToken: localStorage.getItem(this.ACCESS_TOKEN_KEY)?.substring(0, 20) + '...',
+      refreshToken: localStorage.getItem(this.REFRESH_TOKEN_KEY)?.substring(0, 20) + '...',
+      user: this.currentUserSignal()
+    });
   }
 
   /**
    * Guarda los tokens en localStorage
    */
   private saveTokens(accessToken: string, refreshToken: string): void {
+    console.log('💾 Guardando tokens:', {
+      accessToken: accessToken?.substring(0, 30) + '...',
+      refreshToken: refreshToken?.substring(0, 30) + '...'
+    });
+    
     localStorage.setItem(this.ACCESS_TOKEN_KEY, accessToken);
     localStorage.setItem(this.REFRESH_TOKEN_KEY, refreshToken);
   }
@@ -164,10 +184,15 @@ export class AuthService {
    */
   private loadUserFromStorage(): void {
     const userJson = localStorage.getItem(this.USER_KEY);
-    if (userJson) {
+    if (userJson && userJson !== 'undefined' && userJson !== 'null') {
       try {
         const user = JSON.parse(userJson);
-        this.currentUserSignal.set(user);
+        if (user && typeof user === 'object') {
+          this.currentUserSignal.set(user);
+        } else {
+          console.warn('Invalid user data in localStorage');
+          this.clearAuthData();
+        }
       } catch (error) {
         console.error('Error parsing user from localStorage:', error);
         this.clearAuthData();

@@ -1,0 +1,139 @@
+<!-- Loading State -->
+@if (isLoading()) {
+  <div class="loading-container">
+    <div class="spinner"></div>
+    <p>Cargando perfil...</p>
+  </div>
+}
+
+<!-- Error State -->
+@else if (error()) {
+  <div class="error-container">
+    <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="12" cy="12" r="10"></circle>
+      <line x1="12" y1="8" x2="12" y2="12"></line>
+      <line x1="12" y1="16" x2="12.01" y2="16"></line>
+    </svg>
+    <h2>{{ error() }}</h2>
+    <button class="btn-primary" (click)="goBack()">Volver al inicio</button>
+  </div>
+}
+
+<!-- Profile Content -->
+@else if (userProfile()) {
+  <div class="profile-container">
+    <!-- Cover Photo -->
+    <div class="cover-photo" [style.background-image]="userProfile()?.coverUrl ? 'url(' + userProfile()?.coverUrl + ')' : ''">
+      @if (!userProfile()?.coverUrl) {
+        <div class="cover-placeholder"></div>
+      }
+    </div>
+
+    <!-- Profile Header -->
+    <div class="profile-header">
+      <div class="header-content">
+        <!-- Avatar -->
+        <div class="avatar-container">
+          @if (userProfile()?.avatarUrl) {
+            <img [src]="userProfile()?.avatarUrl" [alt]="userProfile()?.fullName || userProfile()?.username" class="avatar">
+          } @else {
+            <div class="avatar-placeholder">
+              {{ (userProfile()?.fullName || userProfile()?.username || 'U').charAt(0).toUpperCase() }}
+            </div>
+          }
+        </div>
+
+        <!-- Header Actions -->
+        <div class="header-actions">
+          @if (isOwnProfile()) {
+            <button class="btn-secondary" (click)="editProfile()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+              </svg>
+              Editar perfil
+            </button>
+          } @else if (userProfile()) {
+            <app-follow-button
+              [userId]="userProfile()!.id"
+              [isFollowing]="isFollowing()"
+              size="medium"
+              (followChange)="onFollowChange($event)"
+            ></app-follow-button>
+          }
+        </div>
+      </div>
+
+      <!-- User Info -->
+      <div class="user-info">
+        <div class="name-row">
+          <h1 class="full-name">{{ userProfile()?.fullName || userProfile()?.username }}</h1>
+          @if (userProfile()?.isVerified) {
+            <svg class="verified-badge" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+          }
+        </div>
+        <p class="username">&#64;{{ userProfile()?.username }}</p>
+        
+        @if (userProfile()?.bio) {
+          <p class="bio">{{ userProfile()?.bio }}</p>
+        }
+      </div>
+
+      <!-- Stats -->
+      <div class="stats">
+        <div class="stat-item">
+          <span class="stat-value">{{ userPosts().length }}</span>
+          <span class="stat-label">Posts</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">{{ userProfile()?.followersCount || 0 }}</span>
+          <span class="stat-label">Seguidores</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">{{ userProfile()?.followingCount || 0 }}</span>
+          <span class="stat-label">Siguiendo</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Posts Section -->
+    <div class="posts-section">
+      <div class="section-header">
+        <h2>Posts</h2>
+      </div>
+
+      @if (isLoadingPosts()) {
+        <div class="posts-loading">
+          <div class="spinner"></div>
+          <p>Cargando posts...</p>
+        </div>
+      } @else if (userPosts().length === 0) {
+        <div class="empty-state">
+          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+          </svg>
+          <h3>
+            @if (isOwnProfile()) {
+              Aún no has publicado nada
+            } @else {
+              Este usuario no ha publicado nada aún
+            }
+          </h3>
+        </div>
+      } @else {
+        <div class="posts-list">
+          @for (post of userPosts(); track post.id) {
+            <app-post-card
+              [post]="post"
+              (likePost)="onLikePost(post.id)"
+              (deletePost)="onDeletePost(post.id)"
+            ></app-post-card>
+          }
+        </div>
+      }
+    </div>
+  </div>
+}

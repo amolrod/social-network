@@ -53,10 +53,11 @@ export class HomeComponent implements OnInit {
 
     this.postService.getPosts(page, 10).subscribe({
       next: (response) => {
+        const newPosts = response.posts || [];
         if (page === 1) {
-          this.posts.set(response.posts);
+          this.posts.set(newPosts);
         } else {
-          this.posts.update((posts) => [...posts, ...response.posts]);
+          this.posts.update((posts) => [...(posts || []), ...newPosts]);
         }
         this.currentPage.set(response.page);
         this.totalPages.set(response.totalPages);

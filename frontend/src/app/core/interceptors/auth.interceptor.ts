@@ -1,106 +1,129 @@
-import { Injectable, inject } from '@angular/core';
+import { inject } from '@angular/core';
 import {
   HttpRequest,
-  HttpHandler,
+  HttpHandlerFn,
   HttpEvent,
-  HttpInterceptor,
+  HttpInterceptorFn,
   HttpErrorResponse
 } from '@angular/common/http';
 import { Observable, throwError, BehaviorSubject } from 'rxjs';
 import { catchError, filter, take, switchMap } from 'rxjs/operators';
 import { AuthService } from '../services/auth.service';
 
+// Variables compartidas para el refresh token
+let isRefreshing = false;
+const refreshTokenSubject = new BehaviorSubject<string | null>(null);
+
 /**
- * Interceptor para adjuntar token JWT a las peticiones HTTP
- * y manejar el refresh token automáticamente
+ * Verifica si es una petición de autenticación
  */
-@Injectable()
-export class AuthInterceptor implements HttpInterceptor {
-  private authService = inject(AuthService);
-  private isRefreshing = false;
-  private refreshTokenSubject: BehaviorSubject<string | null> = new BehaviorSubject<string | null>(null);
+function isAuthRequest(request: HttpRequest<any>): boolean {
+  return request.url.includes('/auth/login') || 
+         request.url.includes('/auth/register');
+}
 
-  intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-    // Agregar token si existe y no es una petición de autenticación
-    const token = this.authService.getAccessToken();
-    
-    if (token && !this.isAuthRequest(request)) {
-      request = this.addToken(request, token);
+/**
+ * Verifica si es una petición de refresh token
+ */
+function isRefreshRequest(request: HttpRequest<any>): boolean {
+  return request.url.includes('/auth/refresh');
+}
+
+/**
+ * Agrega el token JWT al header de la petición
+ */
+function addToken(request: HttpRequest<any>, token: string): HttpRequest<any> {
+  return request.clone({
+    setHeaders: {
+      Authorization: `Bearer ${token}`
     }
+  });
+}
 
-    return next.handle(request).pipe(
-      catchError((error: HttpErrorResponse) => {
-        // Si es 401 y no es petición de refresh, intentar renovar token
-        if (error.status === 401 && !this.isRefreshRequest(request)) {
-          return this.handle401Error(request, next);
-        }
-        
-        return throwError(() => error);
-      })
+/**
+ * Maneja errores 401 intentando refrescar el token
+ */
+function handle401Error(
+  request: HttpRequest<any>,
+  next: HttpHandlerFn,
+  authService: AuthService
+): Observable<HttpEvent<any>> {
+  if (!isRefreshing) {
+    isRefreshing = true;
+    refreshTokenSubject.next(null);
+
+    const refreshToken = authService.getRefreshToken();
+
+    if (refreshToken) {
+      return authService.refreshToken().pipe(
+        switchMap((response: any) => {
+          isRefreshing = false;
+          refreshTokenSubject.next(response.access_token);
+          return next(addToken(request, response.access_token));
+        }),
+        catchError((error) => {
+          isRefreshing = false;
+          authService.logout();
+          return throwError(() => error);
+        })
+      );
+    } else {
+      isRefreshing = false;
+      authService.logout();
+      return throwError(() => new Error('No refresh token available'));
+    }
+  } else {
+    // Esperar a que el refresh termine y reintentar la petición
+    return refreshTokenSubject.pipe(
+      filter(token => token !== null),
+      take(1),
+      switchMap(token => next(addToken(request, token!)))
     );
   }
-
-  /**
-   * Agrega el token JWT al header de la petición
-   */
-  private addToken(request: HttpRequest<any>, token: string): HttpRequest<any> {
-    return request.clone({
-      setHeaders: {
-        Authorization: `Bearer ${token}`
-      }
-    });
-  }
-
-  /**
-   * Maneja errores 401 intentando refrescar el token
-   */
-  private handle401Error(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    if (!this.isRefreshing) {
-      this.isRefreshing = true;
-      this.refreshTokenSubject.next(null);
-
-      const refreshToken = this.authService.getRefreshToken();
-
-      if (refreshToken) {
-        return this.authService.refreshToken().pipe(
-          switchMap((response: any) => {
-            this.isRefreshing = false;
-            this.refreshTokenSubject.next(response.access_token);
-            return next.handle(this.addToken(request, response.access_token));
-          }),
-          catchError((error) => {
-            this.isRefreshing = false;
-            this.authService.logout();
-            return throwError(() => error);
-          })
-        );
-      } else {
-        this.isRefreshing = false;
-        this.authService.logout();
-        return throwError(() => new Error('No refresh token available'));
-      }
-    } else {
-      // Esperar a que el refresh termine y reintentar la petición
-      return this.refreshTokenSubject.pipe(
-        filter(token => token !== null),
-        take(1),
-        switchMap(token => next.handle(this.addToken(request, token!)))
-      );
-    }
-  }
-
-  /**
-   * Verifica si es una petición de autenticación
-   */
-  private isAuthRequest(request: HttpRequest<any>): boolean {
-    return request.url.includes('/auth/login') || 
-           request.url.includes('/auth/register');
-  }
-
-  /**
-   * Verifica si es una petición de refresh token
-   */
-  private isRefreshRequest(request: HttpRequest<any>): boolean {
-    return request.url.includes('/auth/refresh');
-  }
 }
+
+/**
+ * Interceptor funcional para adjuntar token JWT a las peticiones HTTP
+ * y manejar el refresh token automáticamente
+ */
+export const authInterceptor: HttpInterceptorFn = (
+  request: HttpRequest<unknown>,
+  next: HttpHandlerFn
+): Observable<HttpEvent<unknown>> => {
+  const authService = inject(AuthService);
+  
+  // Agregar token si existe y no es una petición de autenticación
+  const token = authService.getAccessToken();
+  
+  console.log('🔍 AuthInterceptor - Request:', {
+    url: request.url,
+    method: request.method,
+    hasToken: !!token,
+    tokenPreview: token ? token.substring(0, 20) + '...' : 'NO TOKEN',
+    isAuthRequest: isAuthRequest(request)
+  });
+  
+  if (token && !isAuthRequest(request)) {
+    request = addToken(request, token);
+    console.log('✅ Token añadido al request');
+  } else {
+    console.warn('⚠️ Token NO añadido:', { hasToken: !!token, isAuthRequest: isAuthRequest(request) });
+  }
+
+  return next(request).pipe(
+    catchError((error: HttpErrorResponse) => {
+      console.error('❌ Error en request:', {
+        status: error.status,
+        url: request.url,
+        message: error.message
+      });
+      
+      // Si es 401 y no es petición de refresh, intentar renovar token
+      if (error.status === 401 && !isRefreshRequest(request)) {
+        return handle401Error(request, next, authService);
+      }
+      
+      return throwError(() => error);
+    })
+  );
+};

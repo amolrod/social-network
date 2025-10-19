@@ -41,7 +41,7 @@ export const routes: Routes = [
           .then(m => m.HomeComponent)
       },
       {
-        path: 'profile',
+        path: 'profile/:username',
         loadComponent: () => import('./features/profile/profile.component')
           .then(m => m.ProfileComponent)
       },

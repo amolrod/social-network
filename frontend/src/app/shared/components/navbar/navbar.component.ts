@@ -19,9 +19,6 @@ export class NavbarComponent {
   
   // Estado para el menú de usuario
   isUserMenuOpen = false;
-  
-  // Estado para el buscador en móvil
-  isSearchOpen = false;
 
   // Obtener iniciales del usuario para el avatar
   userInitials = computed(() => {
@@ -39,13 +36,12 @@ export class NavbarComponent {
     this.isUserMenuOpen = !this.isUserMenuOpen;
   }
 
-  toggleSearch(): void {
-    this.isSearchOpen = !this.isSearchOpen;
-  }
-
   navigateToProfile(): void {
     this.isUserMenuOpen = false;
-    this.router.navigate(['/profile']);
+    const user = this.currentUser();
+    if (user) {
+      this.router.navigate(['/profile', user.username]);
+    }
   }
 
   navigateToSettings(): void {
@@ -57,14 +53,5 @@ export class NavbarComponent {
   logout(): void {
     this.isUserMenuOpen = false;
     this.authService.logout();
-  }
-
-  onSearch(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const query = input.value.trim();
-    
-    if (query) {
-      this.router.navigate(['/search'], { queryParams: { q: query } });
-    }
   }
 }
