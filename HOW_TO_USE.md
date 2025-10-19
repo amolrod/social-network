@@ -367,7 +367,7 @@ alias sn-frontend='cd ~/Desktop/Angular/social-network/frontend && npm start'
 - **TypeORM Docs:** https://typeorm.io
 - **PostgreSQL Docs:** https://www.postgresql.org/docs
 
----
+----
 
 **¡Estás listo para desarrollar!** 🚀
 
