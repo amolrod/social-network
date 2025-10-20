@@ -7,13 +7,14 @@ import { FollowService } from '../../core/services/follow.service';
 import { AuthService } from '../../core/services/auth.service';
 import { FollowButtonComponent } from '../../shared/components/follow-button/follow-button.component';
 import { PostCardComponent } from '../../shared/components/post-card/post-card.component';
+import { EditProfileModalComponent } from '../../shared/components/edit-profile-modal/edit-profile-modal.component';
 import { User } from '../../core/models/user.model';
 import { Post } from '../../core/models/post.model';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, FollowButtonComponent, PostCardComponent],
+  imports: [CommonModule, FollowButtonComponent, PostCardComponent, EditProfileModalComponent],
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.scss']
 })
@@ -30,6 +31,7 @@ export class ProfileComponent implements OnInit {
   isLoading = signal(true);
   isLoadingPosts = signal(true);
   error = signal<string | null>(null);
+  showEditModal = signal(false);
   
   currentUser = this.authService.currentUser;
   
@@ -45,6 +47,17 @@ export class ProfileComponent implements OnInit {
     const profile = this.userProfile();
     return profile ? this.followService.isFollowing(profile.id) : false;
   });
+
+  // Helper methods para acceder a propiedades opcionales
+  getUserLocation(): string | undefined {
+    const profile = this.userProfile();
+    return profile?.location;
+  }
+
+  getUserWebsite(): string | undefined {
+    const profile = this.userProfile();
+    return profile?.website;
+  }
 
   ngOnInit() {
     this.route.params.subscribe(params => {
@@ -125,8 +138,18 @@ export class ProfileComponent implements OnInit {
   }
 
   editProfile(): void {
-    // TODO: Implementar edición de perfil
-    alert('Funcionalidad de edición próximamente');
+    this.showEditModal.set(true);
+  }
+
+  onCloseEditModal(): void {
+    this.showEditModal.set(false);
+  }
+
+  onProfileUpdated(updatedUser: User): void {
+    console.log('✅ Perfil actualizado en ProfileComponent:', updatedUser);
+    // Actualizar el perfil mostrado
+    this.userProfile.set(updatedUser);
+    this.showEditModal.set(false);
   }
 }
 

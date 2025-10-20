@@ -1,0 +1,169 @@
+<div class="modal-overlay" 
+     [class.open]="isOpen()"
+     (click)="onBackdropClick($event)">
+  <div class="modal-container">
+    <!-- Header -->
+    <div class="modal-header">
+      <button class="btn-close" (click)="close()" type="button">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+      <h2>Editar perfil</h2>
+      <button 
+        class="btn-save" 
+        (click)="onSubmit()" 
+        [disabled]="isLoading() || profileForm.invalid"
+        type="button">
+        @if (isLoading()) {
+          <span class="spinner"></span>
+        } @else {
+          Guardar
+        }
+      </button>
+    </div>
+
+    <!-- Error message -->
+    @if (error()) {
+      <div class="error-message">
+        {{ error() }}
+      </div>
+    }
+
+    <!-- Info message -->
+    <div class="info-message">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="16" x2="12" y2="12"></line>
+        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+      </svg>
+      <span>La subida de imágenes se encuentra en desarrollo. Por ahora puedes editar tu nombre, bio, ubicación y sitio web.</span>
+    </div>
+
+    <!-- Form -->
+    <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" class="modal-body">
+      
+      <!-- Cover Image -->
+      <div class="cover-section">
+        @if (coverPreview()) {
+          <img [src]="coverPreview()!" alt="Portada" class="cover-preview">
+        } @else {
+          <div class="cover-placeholder">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <circle cx="8.5" cy="8.5" r="1.5"></circle>
+              <polyline points="21 15 16 10 5 21"></polyline>
+            </svg>
+          </div>
+        }
+        
+        <div class="cover-actions">
+          <label class="btn-icon" title="Cambiar portada">
+            <input 
+              type="file" 
+              accept="image/*" 
+              (change)="onCoverSelected($event)"
+              hidden>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+              <circle cx="12" cy="13" r="4"></circle>
+            </svg>
+          </label>
+          
+          @if (coverPreview()) {
+            <button class="btn-icon" type="button" (click)="removeCover()" title="Eliminar portada">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          }
+        </div>
+      </div>
+
+      <!-- Avatar -->
+      <div class="avatar-section">
+        <div class="avatar-container">
+          @if (avatarPreview()) {
+            <img [src]="avatarPreview()!" alt="Avatar" class="avatar-preview">
+          } @else {
+            <div class="avatar-placeholder">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+            </div>
+          }
+          
+          <label class="avatar-edit-btn" title="Cambiar foto de perfil">
+            <input 
+              type="file" 
+              accept="image/*" 
+              (change)="onAvatarSelected($event)"
+              hidden>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+              <circle cx="12" cy="13" r="4"></circle>
+            </svg>
+          </label>
+        </div>
+      </div>
+
+      <!-- Form Fields -->
+      <div class="form-fields">
+        <div class="form-group">
+          <label for="fullName">Nombre</label>
+          <input 
+            type="text" 
+            id="fullName" 
+            formControlName="fullName"
+            placeholder="Tu nombre completo"
+            maxlength="100">
+          <span class="char-counter">{{ profileForm.get('fullName')?.value?.length || 0 }}/100</span>
+        </div>
+
+        <div class="form-group">
+          <label for="bio">Biografía</label>
+          <textarea 
+            id="bio" 
+            formControlName="bio"
+            placeholder="Cuéntanos sobre ti"
+            rows="4"
+            maxlength="500"></textarea>
+          <span class="char-counter">{{ profileForm.get('bio')?.value?.length || 0 }}/500</span>
+        </div>
+
+        <div class="form-group">
+          <label for="location">Ubicación</label>
+          <input 
+            type="text" 
+            id="location" 
+            formControlName="location"
+            placeholder="Ciudad, País"
+            maxlength="100">
+        </div>
+
+        <div class="form-group">
+          <label for="website">Sitio web</label>
+          <input 
+            type="url" 
+            id="website" 
+            formControlName="website"
+            placeholder="https://tusitio.com"
+            maxlength="200">
+        </div>
+
+        <div class="form-group-checkbox">
+          <label class="checkbox-label">
+            <input 
+              type="checkbox" 
+              formControlName="isPrivate">
+            <span>Perfil privado</span>
+          </label>
+          <p class="help-text">Solo tus seguidores aprobados podrán ver tus publicaciones</p>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

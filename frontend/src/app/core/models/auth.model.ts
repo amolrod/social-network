@@ -9,6 +9,8 @@ export interface User {
   bio?: string;
   avatarUrl?: string;
   coverUrl?: string;
+  location?: string;
+  website?: string;
   isVerified: boolean;
   isPrivate: boolean;
   followersCount: number;

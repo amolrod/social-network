@@ -48,6 +48,13 @@ export class UsersController {
     return user;
   }
 
+  @Patch('me')
+  @ApiOperation({ summary: 'Actualizar perfil del usuario actual' })
+  @ApiResponse({ status: 200, description: 'Perfil actualizado exitosamente' })
+  updateMyProfile(@CurrentUser() user: User, @Body() updateUserDto: UpdateUserDto) {
+    return this.usersService.update(user.id, updateUserDto);
+  }
+
   @Get('search')
   @ApiOperation({ summary: 'Buscar usuarios' })
   @ApiQuery({ name: 'q', required: true, description: 'Término de búsqueda' })

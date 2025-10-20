@@ -9,11 +9,26 @@ export interface User {
   bio?: string;
   avatarUrl?: string;
   coverUrl?: string;
+  location?: string;
+  website?: string;
   isVerified: boolean;
   isPrivate: boolean;
   followersCount?: number;
   followingCount?: number;
   createdAt: Date;
+}
+
+/**
+ * DTO para actualizar el perfil del usuario
+ */
+export interface UpdateProfileDto {
+  fullName?: string;
+  bio?: string;
+  avatarUrl?: string;
+  coverUrl?: string;
+  location?: string;
+  website?: string;
+  isPrivate?: boolean;
 }
 
 /**

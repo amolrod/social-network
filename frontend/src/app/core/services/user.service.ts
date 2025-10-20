@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiService } from './api.service';
-import { User } from '../models/user.model';
+import { User, UpdateProfileDto } from '../models/user.model';
 
 export interface UserListResponse {
   data: User[];  // Cambiado de 'users' a 'data'
@@ -49,7 +49,14 @@ export class UserService {
   }
 
   /**
-   * Actualizar perfil del usuario
+   * Actualizar mi perfil
+   */
+  updateMyProfile(data: UpdateProfileDto): Observable<User> {
+    return this.apiService.patch<User>('/users/me', data);
+  }
+
+  /**
+   * Actualizar perfil del usuario (solo admin)
    */
   updateProfile(id: string, data: Partial<User>): Observable<User> {
     return this.apiService.patch<User>(`/users/${id}`, data);

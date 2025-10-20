@@ -43,6 +43,12 @@ export class User {
   @Column({ name: 'cover_url', length: 500, nullable: true })
   coverUrl: string;
 
+  @Column({ length: 100, nullable: true })
+  location: string;
+
+  @Column({ length: 200, nullable: true })
+  website: string;
+
   @Column({ name: 'is_verified', default: false })
   isVerified: boolean;
 

@@ -1,9 +1,10 @@
 <nav class="bottom-nav">
   <div class="bottom-nav-container">
-    @for (item of navItems; track item.route) {
+    @for (item of navItems(); track $index) {
       <a 
         [routerLink]="item.route" 
         routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: false }"
         class="bottom-nav-item"
         [title]="item.label"
       >
@@ -19,12 +20,6 @@
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="12" r="10"></circle>
                 <polyline points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polyline>
-              </svg>
-            }
-            @case ('plus') {
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 5v14"></path>
-                <path d="M5 12h14"></path>
               </svg>
             }
             @case ('mail') {
@@ -47,7 +42,7 @@
             }
           }
           @if (item.badge) {
-            <span class="badge">{{ item.badge }}</span>
+            <span class="badge">{{ item.badge > 99 ? '99+' : item.badge }}</span>
           }
         </div>
         <span class="nav-label">{{ item.label }}</span>
