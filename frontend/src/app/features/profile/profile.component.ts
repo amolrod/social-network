@@ -104,11 +104,6 @@ export class ProfileComponent implements OnInit {
     }
   }
 
-  onLikePost(postId: string): void {
-    console.log('Like post:', postId);
-    // TODO: Implementar likes cuando esté el módulo
-  }
-
   onDeletePost(postId: string): void {
     if (!confirm('¿Estás seguro de que quieres eliminar este post?')) {
       return;

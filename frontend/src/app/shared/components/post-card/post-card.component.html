@@ -54,25 +54,38 @@
 
   <!-- Estadísticas -->
   <div class="post-stats">
-    <span class="stat">{{ post.likesCount }} me gusta</span>
-    <span class="separator">·</span>
-    <span class="stat">{{ post.commentsCount }} comentarios</span>
+    @if (likesCount() > 0) {
+      <span class="stat">{{ likesCount() }} {{ likesCount() === 1 ? 'me gusta' : 'me gusta' }}</span>
+    }
+    @if (likesCount() > 0 && commentsCount() > 0) {
+      <span class="separator">·</span>
+    }
+    @if (commentsCount() > 0) {
+      <span class="stat">{{ commentsCount() }} {{ commentsCount() === 1 ? 'comentario' : 'comentarios' }}</span>
+    }
   </div>
 
   <!-- Acciones -->
   <div class="post-actions">
-    <button class="action-btn" [class.active]="post.isLiked" (click)="onLike()" type="button">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-      </svg>
-      <span>Me gusta</span>
-    </button>
+    <app-like-button
+      [postId]="post.id"
+      [initialLikesCount]="likesCount()"
+      [initialIsLiked]="post.isLiked || false"
+      [showCount]="false"
+      (likeChange)="onLikeChange($event)">
+    </app-like-button>
 
-    <button class="action-btn" type="button">
+    <button class="action-btn" (click)="toggleComments()" type="button">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
       </svg>
-      <span>Comentar</span>
+      @if (commentsCount() === 0) {
+        <span>Comentar</span>
+      } @else if (commentsCount() === 1) {
+        <span>Ver comentario</span>
+      } @else {
+        <span>Ver los {{ commentsCount() }} comentarios</span>
+      }
     </button>
 
     <button class="action-btn" (click)="onShare()" type="button">
@@ -82,4 +95,14 @@
       <span>Compartir</span>
     </button>
   </div>
+
+  <!-- Sección de comentarios -->
+  @if (showComments()) {
+    <div class="comments-container">
+      <app-comment-section
+        [postId]="post.id"
+        [initialCommentsCount]="commentsCount()">
+      </app-comment-section>
+    </div>
+  }
 </article>

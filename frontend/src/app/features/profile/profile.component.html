@@ -128,7 +128,6 @@
           @for (post of userPosts(); track post.id) {
             <app-post-card
               [post]="post"
-              (likePost)="onLikePost(post.id)"
               (deletePost)="onDeletePost(post.id)"
             ></app-post-card>
           }

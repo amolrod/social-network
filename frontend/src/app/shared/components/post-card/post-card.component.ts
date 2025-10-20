@@ -3,11 +3,13 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { Post } from '../../../core/models/post.model';
 import { AuthService } from '../../../core/services/auth.service';
+import { LikeButtonComponent } from '../like-button/like-button.component';
+import { CommentSectionComponent } from '../comment-section/comment-section.component';
 
 @Component({
   selector: 'app-post-card',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, LikeButtonComponent, CommentSectionComponent],
   templateUrl: './post-card.component.html',
   styleUrls: ['./post-card.component.scss'],
 })
@@ -16,10 +18,18 @@ export class PostCardComponent {
 
   @Input({ required: true }) post!: Post;
   @Output() deletePost = new EventEmitter<string>();
-  @Output() likePost = new EventEmitter<string>();
 
   showMenu = signal(false);
+  showComments = signal(false);
+  likesCount = signal(0);
+  commentsCount = signal(0);
   readonly currentUser = this.authService.currentUser;
+
+  ngOnInit() {
+    // Inicializar contadores desde el post
+    this.likesCount.set(this.post.likesCount || 0);
+    this.commentsCount.set(this.post.commentsCount || 0);
+  }
 
   /**
    * Verificar si el post es del usuario actual
@@ -69,10 +79,17 @@ export class PostCardComponent {
   }
 
   /**
-   * Dar like al post
+   * Toggle sección de comentarios
    */
-  onLike(): void {
-    this.likePost.emit(this.post.id);
+  toggleComments(): void {
+    this.showComments.update((v) => !v);
+  }
+
+  /**
+   * Manejar cambio en likes
+   */
+  onLikeChange(event: { isLiked: boolean; likesCount: number }): void {
+    this.likesCount.set(event.likesCount);
   }
 
   /**

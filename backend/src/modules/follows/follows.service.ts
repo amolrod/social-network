@@ -3,6 +3,8 @@ import {
   NotFoundException,
   BadRequestException,
   ConflictException,
+  Inject,
+  forwardRef,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -12,6 +14,7 @@ import {
   FollowUserResponse,
   FollowStatsResponse,
 } from './dto/follow.dto';
+import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
 export class FollowsService {
@@ -20,6 +23,8 @@ export class FollowsService {
     private readonly followRepository: Repository<Follow>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @Inject(forwardRef(() => NotificationsService))
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   /**
@@ -60,6 +65,9 @@ export class FollowsService {
     // Actualizar contadores
     await this.userRepository.increment({ id: followerId }, 'followingCount', 1);
     await this.userRepository.increment({ id: followingId }, 'followersCount', 1);
+
+    // Crear notificación
+    await this.notificationsService.notifyFollow(followingId, followerId);
 
     return savedFollow;
   }

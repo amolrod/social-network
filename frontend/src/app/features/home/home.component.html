@@ -41,7 +41,6 @@
         @for (post of posts(); track post.id) {
           <app-post-card
             [post]="post"
-            (likePost)="onLikePost($event)"
             (deletePost)="onDeletePost($event)"
           ></app-post-card>
         }

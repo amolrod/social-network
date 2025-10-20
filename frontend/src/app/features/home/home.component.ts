@@ -89,15 +89,6 @@ export class HomeComponent implements OnInit {
   }
 
   /**
-   * Dar like a un post
-   */
-  onLikePost(postId: string): void {
-    // TODO: Implementar like cuando tengamos el módulo de likes
-    console.log('Like post:', postId);
-    alert('Funcionalidad de likes próximamente');
-  }
-
-  /**
    * Eliminar post
    */
   onDeletePost(postId: string): void {
