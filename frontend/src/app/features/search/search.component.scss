@@ -20,7 +20,7 @@
   
   .search-input {
     width: 100%;
-    padding: 1rem 1rem 1rem 3rem;
+    padding: 1rem 3rem 1rem 3rem;
     font-size: 1rem;
     border: 2px solid #e1e8ed;
     border-radius: 50px;
@@ -34,6 +34,45 @@
 
     &::placeholder {
       color: #657786;
+    }
+  }
+
+  .search-icon-left {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    color: #657786;
+    pointer-events: none;
+  }
+
+  .clear-button {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #657786;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    padding: 0;
+
+    &:hover {
+      background: #1a1a1a;
+    }
+
+    svg {
+      width: 14px;
+      height: 14px;
+      color: white;
     }
   }
 
@@ -213,6 +252,155 @@
   flex-shrink: 0;
 }
 
+// Tabs Section
+.tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin: 1.5rem 0;
+  padding: 0.5rem;
+  background: #f5f8fa;
+  border-radius: 12px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+
+  &::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #cbd6e2;
+    border-radius: 2px;
+  }
+}
+
+.tab {
+  flex: 1;
+  min-width: fit-content;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #657786;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  &:hover {
+    background: rgba(29, 161, 242, 0.1);
+    color: #1DA1F2;
+  }
+
+  &.active {
+    background: white;
+    color: #1DA1F2;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+}
+
+// Trending Topics Section
+.trending-section {
+  margin-top: 2rem;
+}
+
+.trending-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+
+  h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0;
+  }
+
+  svg {
+    width: 28px;
+    height: 28px;
+    color: #1DA1F2;
+  }
+}
+
+.trending-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  background: white;
+  border: 1px solid #e1e8ed;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.trending-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #e1e8ed;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background: #f5f8fa;
+
+    .trending-icon {
+      color: #1DA1F2;
+      transform: translateX(4px);
+    }
+  }
+}
+
+.trending-info {
+  flex: 1;
+}
+
+.trending-category {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #657786;
+  margin-bottom: 0.25rem;
+}
+
+.trending-hashtag {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 0.25rem 0;
+}
+
+.trending-count {
+  display: block;
+  font-size: 0.85rem;
+  color: #657786;
+}
+
+.trending-icon {
+  width: 24px;
+  height: 24px;
+  color: #657786;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
@@ -220,6 +408,40 @@
 @media (max-width: 640px) {
   .search-container {
     padding: 1rem;
+  }
+
+  .tabs {
+    gap: 0.25rem;
+    padding: 0.25rem;
+  }
+
+  .tab {
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
+
+  .trending-header {
+    h2 {
+      font-size: 1.25rem;
+    }
+
+    svg {
+      width: 24px;
+      height: 24px;
+    }
+  }
+
+  .trending-item {
+    padding: 0.875rem 1rem;
+  }
+
+  .trending-hashtag {
+    font-size: 1rem;
   }
 
   .user-card {

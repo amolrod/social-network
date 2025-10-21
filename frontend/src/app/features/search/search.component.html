@@ -1,15 +1,50 @@
 <div class="search-container">
   <div class="search-header">
     <div class="search-input-wrapper">
+      <svg class="search-icon-left" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+      </svg>
       <input 
         type="text" 
         class="search-input"
-        placeholder="Buscar por nombre o username..."
+        placeholder="Buscar usuarios..."
         [value]="searchQuery()"
-        (input)="onSearchInput($event)">
-      <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-      </svg>
+        (input)="onSearchInput($event)"
+        autofocus>
+      @if (searchQuery().length > 0) {
+        <button class="clear-button" (click)="searchQuery.set(''); searchResults.set([]); noResults.set(false)" type="button">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      }
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button 
+        class="tab" 
+        [class.active]="activeTab() === 'users'"
+        (click)="changeTab('users')"
+        type="button">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+          <circle cx="9" cy="7" r="4"></circle>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+        </svg>
+        <span>Usuarios</span>
+      </button>
+      <button 
+        class="tab" 
+        [class.active]="activeTab() === 'trending'"
+        (click)="changeTab('trending')"
+        type="button">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+        </svg>
+        <span>Tendencias</span>
+      </button>
     </div>
   </div>
 
@@ -79,7 +114,7 @@
     </div>
   }
 
-  @if (suggestedUsers().length > 0 && searchQuery().length === 0) {
+  @if (suggestedUsers().length > 0 && searchQuery().length === 0 && activeTab() === 'users') {
     <div class="users-section">
       <h2>Usuarios Sugeridos</h2>
       <div class="users-grid">
@@ -119,6 +154,33 @@
                 </app-follow-button>
               </div>
             }
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- Trending Topics -->
+  @if (activeTab() === 'trending' || (showTrending() && searchQuery().length === 0)) {
+    <div class="trending-section">
+      <div class="trending-header">
+        <h2>Tendencias</h2>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+          <polyline points="17 6 23 6 23 12"></polyline>
+        </svg>
+      </div>
+      <div class="trending-list">
+        @for (topic of trendingTopics(); track topic.id) {
+          <div class="trending-item" (click)="searchTrending(topic.hashtag)">
+            <div class="trending-info">
+              <span class="trending-category">{{ topic.category }}</span>
+              <h3 class="trending-hashtag">{{ topic.hashtag }}</h3>
+              <span class="trending-count">{{ formatTrendCount(topic.count) }} publicaciones</span>
+            </div>
+            <svg class="trending-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+            </svg>
           </div>
         }
       </div>
