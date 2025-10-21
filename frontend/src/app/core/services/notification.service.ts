@@ -1,7 +1,8 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, inject, signal, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { Observable, tap, Subscription, filter } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { WebSocketService } from './websocket.service';
 
 /**
  * Tipos de notificaciones
@@ -51,9 +52,11 @@ interface NotificationsResponse {
 @Injectable({
   providedIn: 'root'
 })
-export class NotificationService {
+export class NotificationService implements OnDestroy {
   private readonly http = inject(HttpClient);
+  private readonly webSocketService = inject(WebSocketService);
   private readonly apiUrl = `${environment.apiUrl}/notifications`;
+  private subscriptions = new Subscription();
 
   // Signals para estado reactivo
   readonly notifications = signal<Notification[]>([]);
@@ -61,6 +64,43 @@ export class NotificationService {
   readonly isLoading = signal<boolean>(false);
   readonly currentPage = signal<number>(1);
   readonly totalPages = signal<number>(1);
+
+  constructor() {
+    // Suscribirse a eventos de WebSocket para notificaciones en tiempo real
+    this.subscribeToWebSocketEvents();
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
+  }
+
+  /**
+   * Suscribirse a eventos de WebSocket
+   */
+  private subscribeToWebSocketEvents() {
+    const eventsSub = this.webSocketService.events$
+      .pipe(
+        filter(event => 
+          event.type === 'notification' || 
+          event.type === 'like' || 
+          event.type === 'comment' || 
+          event.type === 'follow'
+        )
+      )
+      .subscribe(event => {
+        console.log('🔔 Notificación en tiempo real recibida:', event);
+        
+        // Incrementar contador de notificaciones no leídas
+        this.unreadCount.update(count => count + 1);
+        
+        // Opcional: recargar notificaciones si estamos en la página 1
+        if (this.currentPage() === 1) {
+          this.getNotifications(1).subscribe();
+        }
+      });
+
+    this.subscriptions.add(eventsSub);
+  }
 
   /**
    * Obtener notificaciones con paginación

@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Like } from './entities/like.entity';
 import { Post } from '../posts/entities/post.entity';
 import { NotificationsService } from '../notifications/notifications.service';
+import { EventsGateway } from '../../events/events.gateway';
 
 @Injectable()
 export class LikesService {
@@ -14,6 +15,8 @@ export class LikesService {
     private readonly postRepository: Repository<Post>,
     @Inject(forwardRef(() => NotificationsService))
     private readonly notificationsService: NotificationsService,
+    @Inject(forwardRef(() => EventsGateway))
+    private readonly eventsGateway: EventsGateway,
   ) {}
 
   /**
@@ -49,6 +52,9 @@ export class LikesService {
     // Crear notificación (solo si el like no es del autor del post)
     if (post.userId !== userId) {
       await this.notificationsService.notifyLike(post.userId, userId, postId);
+      
+      // Emitir evento WebSocket en tiempo real
+      this.eventsGateway.emitNewLike(postId, post.userId, { userId });
     }
 
     return { message: 'Like agregado correctamente' };

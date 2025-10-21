@@ -6,6 +6,7 @@ import { Post } from '../posts/entities/post.entity';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { NotificationsService } from '../notifications/notifications.service';
+import { EventsGateway } from '../../events/events.gateway';
 
 @Injectable()
 export class CommentsService {
@@ -16,6 +17,8 @@ export class CommentsService {
     private readonly postRepository: Repository<Post>,
     @Inject(forwardRef(() => NotificationsService))
     private readonly notificationsService: NotificationsService,
+    @Inject(forwardRef(() => EventsGateway))
+    private readonly eventsGateway: EventsGateway,
   ) {}
 
   /**
@@ -56,6 +59,13 @@ export class CommentsService {
     // Crear notificación (solo si el comentario no es del autor del post)
     if (post.userId !== userId) {
       await this.notificationsService.notifyComment(post.userId, userId, postId, savedComment.id);
+      
+      // Emitir evento WebSocket para notificación en tiempo real
+      this.eventsGateway.emitNewComment(postId, post.userId, {
+        userId,
+        commentId: savedComment.id,
+        content: content.substring(0, 100), // Primeros 100 caracteres
+      });
     }
 
     // Cargar relaciones para la respuesta

@@ -19,6 +19,8 @@ import { FollowsModule } from './modules/follows/follows.module';
 import { LikesModule } from './modules/likes/likes.module';
 import { CommentsModule } from './modules/comments/comments.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
+import { MessagesModule } from './modules/messages/messages.module';
+import { EventsModule } from './events/events.module';
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
 
 /**
@@ -72,6 +74,8 @@ import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
     LikesModule,
     CommentsModule,
     NotificationsModule,
+    MessagesModule,
+    EventsModule,
   ],
   controllers: [AppController],
   providers: [

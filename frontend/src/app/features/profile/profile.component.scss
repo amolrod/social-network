@@ -124,6 +124,33 @@
 // Header Actions
 .header-actions {
   padding-bottom: 0.5rem;
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.btn-message {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: transparent;
+  color: #1da1f2;
+  border: 1px solid #1da1f2;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  &:hover {
+    background: rgba(29, 161, 242, 0.1);
+  }
 }
 
 .btn-secondary {

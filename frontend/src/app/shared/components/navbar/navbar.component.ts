@@ -1,8 +1,11 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { MessageService } from '../../../core/services/message.service';
 import { NotificationBadgeComponent } from '../notification-badge/notification-badge.component';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-navbar',
@@ -11,15 +14,32 @@ import { NotificationBadgeComponent } from '../notification-badge/notification-b
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss'
 })
-export class NavbarComponent {
+export class NavbarComponent implements OnInit, OnDestroy {
   private authService = inject(AuthService);
+  private messageService = inject(MessageService);
   private router = inject(Router);
+  private destroy$ = new Subject<void>();
 
   currentUser = this.authService.currentUser;
   isAuthenticated = this.authService.isAuthenticated;
+  unreadMessagesCount = computed(() => {
+    return this.messageService.unreadCount$;
+  });
   
   // Estado para el menú de usuario
   isUserMenuOpen = false;
+
+  ngOnInit(): void {
+    // Cargar contador de mensajes no leídos
+    if (this.isAuthenticated()) {
+      this.messageService.updateUnreadCount();
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 
   // Obtener iniciales del usuario para el avatar
   userInitials = computed(() => {

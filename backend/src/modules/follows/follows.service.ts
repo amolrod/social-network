@@ -15,6 +15,7 @@ import {
   FollowStatsResponse,
 } from './dto/follow.dto';
 import { NotificationsService } from '../notifications/notifications.service';
+import { EventsGateway } from '../../events/events.gateway';
 
 @Injectable()
 export class FollowsService {
@@ -25,6 +26,8 @@ export class FollowsService {
     private readonly userRepository: Repository<User>,
     @Inject(forwardRef(() => NotificationsService))
     private readonly notificationsService: NotificationsService,
+    @Inject(forwardRef(() => EventsGateway))
+    private readonly eventsGateway: EventsGateway,
   ) {}
 
   /**
@@ -68,6 +71,9 @@ export class FollowsService {
 
     // Crear notificación
     await this.notificationsService.notifyFollow(followingId, followerId);
+
+    // Emitir evento WebSocket para notificación en tiempo real
+    this.eventsGateway.emitNewFollow(followingId, followerId);
 
     return savedFollow;
   }

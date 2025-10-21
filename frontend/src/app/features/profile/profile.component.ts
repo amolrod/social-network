@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { UserService } from '../../core/services/user.service';
 import { PostService } from '../../core/services/post.service';
 import { FollowService } from '../../core/services/follow.service';
+import { MessageService } from '../../core/services/message.service';
 import { AuthService } from '../../core/services/auth.service';
 import { FollowButtonComponent } from '../../shared/components/follow-button/follow-button.component';
 import { PostCardComponent } from '../../shared/components/post-card/post-card.component';
@@ -24,6 +25,7 @@ export class ProfileComponent implements OnInit {
   private userService = inject(UserService);
   private postService = inject(PostService);
   private followService = inject(FollowService);
+  private messageService = inject(MessageService);
   private authService = inject(AuthService);
 
   userProfile = signal<User | null>(null);
@@ -150,6 +152,22 @@ export class ProfileComponent implements OnInit {
     // Actualizar el perfil mostrado
     this.userProfile.set(updatedUser);
     this.showEditModal.set(false);
+  }
+
+  /**
+   * Enviar mensaje directo al usuario
+   */
+  sendMessage(): void {
+    const profile = this.userProfile();
+    if (!profile) return;
+
+    // Navegar a mensajes con el usuario seleccionado
+    this.router.navigate(['/messages'], { 
+      queryParams: { 
+        userId: profile.id,
+        username: profile.username 
+      } 
+    });
   }
 }
 

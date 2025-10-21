@@ -1,0 +1,230 @@
+<div class="messages-container">
+  <!-- Sidebar: Lista de conversaciones -->
+  <div class="conversations-sidebar" [class.hidden-mobile]="selectedConversation()">
+    <div class="sidebar-header">
+      <h1>Mensajes</h1>
+      <button class="new-message-btn" title="Nueva conversación" (click)="router.navigate(['/search'])">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+          <line x1="9" y1="10" x2="15" y2="10"></line>
+          <line x1="12" y1="7" x2="12" y2="13"></line>
+        </svg>
+      </button>
+      <div class="search-wrapper">
+        <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.35-4.35"></path>
+        </svg>
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Buscar conversaciones..."
+          [(ngModel)]="searchQuery"
+          (ngModelChange)="searchQuery.set($event)"
+        />
+      </div>
+    </div>
+
+    <!-- Loading state -->
+    @if (isLoading()) {
+      <div class="loading-conversations">
+        @for (i of [1,2,3,4,5]; track i) {
+          <div class="conversation-skeleton">
+            <div class="skeleton-avatar"></div>
+            <div class="skeleton-content">
+              <div class="skeleton-name"></div>
+              <div class="skeleton-message"></div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Conversations list -->
+    @if (!isLoading()) {
+      <div class="conversations-list">
+        @if (filteredConversations().length === 0) {
+          <div class="empty-state">
+            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+            <h3>Sin conversaciones</h3>
+            <p>Comienza a chatear con otros usuarios</p>
+          </div>
+        } @else {
+          @for (conversation of filteredConversations(); track conversation.otherUser.id) {
+            <div 
+              class="conversation-item"
+              [class.active]="selectedConversation() && selectedConversation()!.otherUser.id === conversation.otherUser.id"
+              [class.unread]="conversation.unreadCount > 0"
+              (click)="selectConversation(conversation)"
+            >
+              <div class="conversation-avatar">
+                @if (conversation.otherUser.avatarUrl) {
+                  <img [src]="conversation.otherUser.avatarUrl" [alt]="conversation.otherUser.fullName">
+                } @else {
+                  <div class="avatar-placeholder">
+                    {{ conversation.otherUser.fullName.charAt(0).toUpperCase() }}
+                  </div>
+                }
+                <!-- Online indicator (placeholder) -->
+                <div class="online-indicator"></div>
+              </div>
+              
+              <div class="conversation-info">
+                <div class="conversation-header">
+                  <div class="user-name-row">
+                    <span class="user-name">{{ conversation.otherUser.fullName }}</span>
+                    @if (conversation.otherUser.isVerified) {
+                      <svg class="verified-badge" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                      </svg>
+                    }
+                  </div>
+                  <span class="message-time">{{ formatTime(conversation.createdAt) }}</span>
+                </div>
+                <div class="last-message">
+                  <p class="message-preview">{{ conversation.content }}</p>
+                  @if (conversation.unreadCount > 0) {
+                    <span class="unread-badge">{{ conversation.unreadCount }}</span>
+                  }
+                </div>
+              </div>
+            </div>
+          }
+        }
+      </div>
+    }
+  </div>
+
+  <!-- Chat area -->
+  <div class="chat-area" [class.active]="selectedConversation()">
+    @if (!selectedConversation()) {
+      <div class="no-chat-selected">
+        <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+          <line x1="9" y1="10" x2="15" y2="10"></line>
+          <line x1="9" y1="14" x2="13" y2="14"></line>
+        </svg>
+        <h2>Selecciona una conversación</h2>
+        <p>Elige un chat de la lista para comenzar a enviar mensajes</p>
+      </div>
+    } @else {
+      <!-- Chat header -->
+      <div class="chat-header">
+        <button class="back-button" (click)="backToConversations()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </button>
+        
+        <div class="chat-user-info" (click)="goToProfile(selectedConversation()!.otherUser.username)">
+          <div class="chat-avatar">
+            @if (selectedConversation()!.otherUser.avatarUrl) {
+              <img [src]="selectedConversation()!.otherUser.avatarUrl" [alt]="selectedConversation()!.otherUser.fullName">
+            } @else {
+              <div class="avatar-placeholder">
+                {{ selectedConversation()!.otherUser.fullName.charAt(0).toUpperCase() }}
+              </div>
+            }
+          </div>
+          <div class="chat-user-details">
+            <div class="user-name-row">
+              <h3>{{ selectedConversation()!.otherUser.fullName }}</h3>
+              @if (selectedConversation()!.otherUser.isVerified) {
+                <svg class="verified-badge" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>
+              }
+            </div>
+            <span class="username">@{{ selectedConversation()!.otherUser.username }}</span>
+          </div>
+        </div>
+
+        <div class="chat-actions">
+          <!-- Placeholder for future actions (video call, info, etc) -->
+        </div>
+      </div>
+
+      <!-- Messages list -->
+      <div class="messages-list">
+        @if (isLoadingMessages() && messages().length === 0) {
+          <div class="loading-messages">
+            @for (i of [1,2,3]; track i) {
+              <div class="message-skeleton" [class.right]="i % 2 === 0">
+                <div class="skeleton-bubble"></div>
+              </div>
+            }
+          </div>
+        }
+
+        @if (hasMore() && !isLoadingMessages() && messages().length > 0) {
+          <button class="load-more-button" (click)="loadMoreMessages()">
+            Cargar mensajes anteriores
+          </button>
+        }
+
+        @if (isLoadingMessages() && messages().length > 0) {
+          <div class="loading-more">
+            <div class="spinner"></div>
+          </div>
+        }
+
+        @for (message of messages(); track message.id) {
+          <div class="message" [class.sent]="isMyMessage(message)" [class.received]="!isMyMessage(message)">
+            <div class="message-bubble">
+              <p class="message-content">{{ message.content }}</p>
+              <div class="message-meta">
+                <span class="message-time">{{ formatTime(message.createdAt) }}</span>
+                @if (isMyMessage(message)) {
+                  <svg class="read-indicator" [class.read]="message.isRead" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                }
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Message input -->
+      <div class="message-input-container">
+        <div class="message-input-wrapper">
+          <button class="emoji-button" title="Agregar emoji">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
+              <line x1="9" y1="9" x2="9.01" y2="9"></line>
+              <line x1="15" y1="9" x2="15.01" y2="9"></line>
+            </svg>
+          </button>
+          
+          <textarea
+            class="message-input"
+            placeholder="Escribe un mensaje..."
+            [(ngModel)]="newMessage"
+            (ngModelChange)="newMessage.set($event)"
+            (keypress)="onKeyPress($event)"
+            rows="1"
+            [disabled]="isSending()"
+          ></textarea>
+
+          <button 
+            class="send-button" 
+            (click)="sendMessage()"
+            [disabled]="!newMessage().trim() || isSending()"
+          >
+            @if (isSending()) {
+              <div class="spinner-small"></div>
+            } @else {
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+              </svg>
+            }
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+</div>
