@@ -1,0 +1,2 @@
+- chat ia en publicaciones y un chat con el que hablar en los mensajes
+- 

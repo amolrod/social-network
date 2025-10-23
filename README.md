@@ -28,7 +28,8 @@ Una red social moderna y completa construida con **Angular 18** y **NestJS**, in
 ### 📝 Publicaciones
 - ✅ Crear posts de texto
 - NO imagenes todavia
-- ✅ Feed infinito con scroll
+- ✅ Feed infinito dandole a cargar mas
+- FALTA scroll infinito
 - ✅ Sistema de likes en tiempo real
 - ✅ Comentarios y respuestas
 - ✅ Eliminar publicaciones propias
