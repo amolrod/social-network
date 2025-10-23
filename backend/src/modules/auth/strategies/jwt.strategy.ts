@@ -26,6 +26,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     if (!user) {
       throw new UnauthorizedException();
     }
-    return user;
+    // Retornar un objeto que incluya tanto el payload como el usuario
+    // Esto permite que req.user.sub funcione correctamente
+    return { 
+      sub: payload.sub,
+      ...user 
+    };
   }
 }

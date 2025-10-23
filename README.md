@@ -19,14 +19,15 @@ Una red social moderna y completa construida con **Angular 18** y **NestJS**, in
 - ✅ Hash de contraseñas con bcrypt
 
 ### 👤 Perfiles de Usuario
-- ✅ Perfil personalizable (avatar, bio, ubicación)
+- ✅ Perfil personalizable (bio, ubicación...)
 - ✅ Contador de seguidores/seguidos
 - ✅ Grid de publicaciones del usuario
 - ✅ Botón para seguir/dejar de seguir
 - ✅ Botón para enviar mensaje directo
 
 ### 📝 Publicaciones
-- ✅ Crear posts con imágenes
+- ✅ Crear posts de texto
+- NO imagenes todavia
 - ✅ Feed infinito con scroll
 - ✅ Sistema de likes en tiempo real
 - ✅ Comentarios y respuestas
