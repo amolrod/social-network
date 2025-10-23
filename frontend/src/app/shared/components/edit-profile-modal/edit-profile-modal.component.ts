@@ -64,16 +64,18 @@ export class EditProfileModalComponent implements OnInit {
         isPrivate: user.isPrivate || false
       });
       
-      if (user.avatarUrl) {
-        this.avatarPreview.set(user.avatarUrl);
-      }
-      
-      if (user.coverUrl) {
-        this.coverPreview.set(user.coverUrl);
-      }
+      // DESHABILITADO: Carga de imágenes de perfil
+      // if (user.avatarUrl) {
+      //   this.avatarPreview.set(user.avatarUrl);
+      // }
+      // if (user.coverUrl) {
+      //   this.coverPreview.set(user.coverUrl);
+      // }
     }
   }
 
+  // FUNCIONES DE IMÁGENES DESHABILITADAS TEMPORALMENTE
+  /*
   async onAvatarSelected(event: Event): Promise<void> {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
@@ -133,6 +135,7 @@ export class EditProfileModalComponent implements OnInit {
     this.selectedCoverFile = null;
     this.coverPreview.set(null);
   }
+  */
 
   async onSubmit(): Promise<void> {
     if (this.profileForm.invalid || this.isLoading()) {
@@ -151,9 +154,7 @@ export class EditProfileModalComponent implements OnInit {
         isPrivate: this.profileForm.value.isPrivate
       };
 
-      // Por ahora NO enviamos imágenes base64 (demasiado grandes)
-      // TODO: Implementar upload real de archivos cuando el endpoint esté listo
-      // Solo limpiamos campos vacíos
+      // Limpiar campos vacíos
       Object.keys(formData).forEach(key => {
         if (formData[key as keyof UpdateProfileDto] === '' || 
             formData[key as keyof UpdateProfileDto] === null) {
@@ -161,7 +162,7 @@ export class EditProfileModalComponent implements OnInit {
         }
       });
 
-      console.log('📤 Enviando datos de perfil:', formData);
+      console.log('📤 Enviando datos de perfil (sin imágenes):', formData);
 
       this.userService.updateMyProfile(formData).subscribe({
         next: (updatedUser) => {
@@ -188,7 +189,7 @@ export class EditProfileModalComponent implements OnInit {
       });
     } catch (err) {
       console.error('❌ Error inesperado:', err);
-      this.error.set('Error inesperado al procesar las imágenes');
+      this.error.set('Error inesperado. Por favor intenta nuevamente.');
       this.isLoading.set(false);
     }
   }

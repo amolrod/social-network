@@ -38,13 +38,14 @@
         <line x1="12" y1="16" x2="12" y2="12"></line>
         <line x1="12" y1="8" x2="12.01" y2="8"></line>
       </svg>
-      <span>La subida de imágenes se encuentra en desarrollo. Por ahora puedes editar tu nombre, bio, ubicación y sitio web.</span>
+      <span>La subida de imágenes está deshabilitada temporalmente. Puedes editar tu nombre, bio, ubicación y sitio web.</span>
     </div>
 
     <!-- Form -->
     <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" class="modal-body">
       
-      <!-- Cover Image -->
+      <!-- Cover Image - DESHABILITADO TEMPORALMENTE -->
+      <!-- 
       <div class="cover-section">
         @if (coverPreview()) {
           <img [src]="coverPreview()!" alt="Portada" class="cover-preview">
@@ -81,8 +82,10 @@
           }
         </div>
       </div>
+      -->
 
-      <!-- Avatar -->
+      <!-- Avatar - DESHABILITADO TEMPORALMENTE -->
+      <!--
       <div class="avatar-section">
         <div class="avatar-container">
           @if (avatarPreview()) {
@@ -109,6 +112,7 @@
           </label>
         </div>
       </div>
+      -->
 
       <!-- Form Fields -->
       <div class="form-fields">

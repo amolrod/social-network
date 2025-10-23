@@ -22,11 +22,9 @@
 <!-- Profile Content -->
 @else if (userProfile()) {
   <div class="profile-container">
-    <!-- Cover Photo -->
-    <div class="cover-photo" [style.background-image]="userProfile()?.coverUrl ? 'url(' + userProfile()?.coverUrl + ')' : ''">
-      @if (!userProfile()?.coverUrl) {
-        <div class="cover-placeholder"></div>
-      }
+    <!-- Cover Photo - Imágenes deshabilitadas temporalmente -->
+    <div class="cover-photo">
+      <div class="cover-placeholder"></div>
     </div>
 
     <!-- Profile Header -->
@@ -34,13 +32,10 @@
       <div class="header-content">
         <!-- Avatar -->
         <div class="avatar-container">
-          @if (userProfile()?.avatarUrl) {
-            <img [src]="userProfile()?.avatarUrl" [alt]="userProfile()?.fullName || userProfile()?.username" class="avatar">
-          } @else {
-            <div class="avatar-placeholder">
-              {{ (userProfile()?.fullName || userProfile()?.username || 'U').charAt(0).toUpperCase() }}
-            </div>
-          }
+          <!-- Imágenes de perfil deshabilitadas temporalmente - siempre mostrar placeholder -->
+          <div class="avatar-placeholder">
+            {{ (userProfile()?.fullName || userProfile()?.username || 'U').charAt(0).toUpperCase() }}
+          </div>
         </div>
 
         <!-- Header Actions -->

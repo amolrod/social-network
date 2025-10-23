@@ -41,6 +41,13 @@ export class ProfileComponent implements OnInit {
   isOwnProfile = computed(() => {
     const current = this.currentUser();
     const profile = this.userProfile();
+    console.log('🔍 isOwnProfile check:', {
+      current,
+      profile,
+      currentId: current?.id,
+      profileId: profile?.id,
+      isOwn: current && profile && current.id === profile.id
+    });
     return current && profile && current.id === profile.id;
   });
 
@@ -74,14 +81,18 @@ export class ProfileComponent implements OnInit {
     this.isLoading.set(true);
     this.error.set(null);
 
+    console.log('📥 Cargando perfil para username:', username);
+    console.log('👤 Usuario actual (currentUser):', this.currentUser());
+
     this.userService.getUserByUsername(username).subscribe({
       next: (user) => {
+        console.log('✅ Perfil cargado:', user);
         this.userProfile.set(user);
         this.isLoading.set(false);
         this.loadUserPosts(username);
       },
       error: (err) => {
-        console.error('Error al cargar perfil:', err);
+        console.error('❌ Error al cargar perfil:', err);
         this.error.set('Usuario no encontrado');
         this.isLoading.set(false);
       }
